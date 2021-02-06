@@ -1,5 +1,8 @@
 
-html, body { margin: 0; }
+html, body {
+    margin: 0;
+    background-color: black;
+}
 
 #canvas {
     width: 100vw;
@@ -20,10 +23,16 @@ html, body { margin: 0; }
     bottom: 0px;
 }
 
+#loading {
+    color: red;
+    font-weight: bold;
+}
+
 a {
     pointer-events: visible;
     text-decoration: none;
     color: #aaa;
+    font-weight: bold;
 }
 
 a :hover {

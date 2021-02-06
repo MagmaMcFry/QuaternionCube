@@ -148,4 +148,5 @@ window.addEventListener("load", function() {
 
 	requestAnimationFrame(animate);
 
+	document.getElementById("loading").remove();
 });
