@@ -22,12 +22,10 @@ class Panel:
 
 panels = []
 
-def clamp(v, lb, ub):
-	if v < lb:
-		return lb
-	if v > ub:
-		return ub
-	return v
+def sgn(x):
+	if x < 0: return -1
+	if x > 0: return 1
+	return 0
 
 for x in range(-2, 3):
 	for y in range(-2, 3):
@@ -36,7 +34,7 @@ for x in range(-2, 3):
 			if stuple[1] < 2:
 				panel = Panel()
 				panel.pos = tuple([x, y, z])
-				panel.cubie_center = tuple([clamp(x, -1, 1), clamp(y, -1, 1), clamp(z, -1, 1)])
+				panel.cubie_center = tuple([2*sgn(x), 2*sgn(y), 2*sgn(z)])
 				panel.outer = (stuple[2] == 2)
 				panels.append(panel)
 
@@ -207,11 +205,6 @@ class Move:
 
 moves = []
 
-def sgn(x):
-	if x < 0: return -1
-	if x > 0: return 1
-	return 0
-
 for rotation in rotations:
 	for plane in [-1, 0, 1]:
 		move = Move()
@@ -228,7 +221,7 @@ for rotation in rotations:
 						move.panel_perm[i0] = i1
 		moves.append(move)
 
-######## Move actions #########
+######## Move table #########
 
 move_table = []
 for i in range(len(panels)):
@@ -243,7 +236,10 @@ for i_old, old_panel in enumerate(panels):
 		for mi, move in enumerate(moves):
 			i_moved = move.panel_perm[i_old]
 			moved_panel = panels[i_moved]
-			if moved_panel != old_panel and moved_panel.color != old_panel.color and new_panel.color in [moved_panel.color, old_panel.color]:
+			if moved_panel != old_panel \
+				and moved_panel.color != old_panel.color \
+				and new_panel.color in [moved_panel.color, old_panel.color] \
+				and move.affected_panels[i_old]:
 				distance = manhattan_dist(moved_panel.pos, new_panel.pos) \
 					+ 5 * int(moved_panel.color != new_panel.color)
 				if (distance < best_distance):
@@ -257,6 +253,7 @@ for i_old, old_panel in enumerate(panels):
 for panel in panels:
 	del panel.outer
 	panel.pos = list(panel.pos)
+	panel.cubie_center = list(panel.cubie_center)
 
 for move in moves:
 	move.axis = list(move.axis)

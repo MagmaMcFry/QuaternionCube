@@ -5,6 +5,9 @@ window.addEventListener("load", function() {
 	const scene = new THREE.Scene();
 	const camera = new THREE.PerspectiveCamera(40, canvas.clientWidth / canvas.clientHeight, 0.1, 10);
 	camera.position.z = 5;
+	const camera_rotation = new THREE.Object3D();
+	camera_rotation.add(camera);
+	scene.add(camera_rotation);
 	const renderer = new THREE.WebGLRenderer();
 	renderer.setSize(canvas.clientWidth, canvas.clientHeight);
 	canvas.appendChild(renderer.domElement);
@@ -23,7 +26,7 @@ window.addEventListener("load", function() {
 	};
 
 	function update_cube() {
-		current_amount += 0.1;
+		current_amount += 0.01;
 		if (current_amount > 0) {
 			current_amount = 0;
 		}
@@ -51,10 +54,10 @@ window.addEventListener("load", function() {
 
 		if (mouse_down && clicked_panel == -1) {
 			let dmouse = mouse.clone().sub(oldmouse);
-			let target = new THREE.Quaternion(-100*dmouse.y, 100*dmouse.x, 0, 1).normalize();
+			let target = new THREE.Quaternion(100*dmouse.y, -100*dmouse.x, 0, 1).normalize();
 			let rotation = new THREE.Quaternion();
 			rotation.rotateTowards(target, 2*dmouse.length());
-			cubemodel.quaternion.multiplyQuaternions(rotation, cubemodel.quaternion);
+			camera_rotation.quaternion.multiply(rotation);
 		}
 	});
 
