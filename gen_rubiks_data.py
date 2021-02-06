@@ -223,6 +223,19 @@ for rotation in rotations:
 
 ######## Move table #########
 
+def move_distance(old_panel, new_panel, moved_panel, old_affected, new_affected):
+	if not old_affected:
+		return 100
+	if new_panel == old_panel:
+		return 100
+	if moved_panel == old_panel:
+		return 100
+	if new_panel.color == moved_panel.color and new_panel.color != old_panel.color:
+		return 0
+	if old_affected and new_affected:
+		return manhattan_dist(moved_panel.pos, new_panel.pos) + 10 * int(moved_panel.color == old_panel.color)
+	return 100
+
 move_table = []
 for i in range(len(panels)):
 	move_table.append([-1] * len(panels))
@@ -232,19 +245,16 @@ for i_old, old_panel in enumerate(panels):
 		if i_old == i_new or not (old_panel.outer and new_panel.outer):
 			continue
 		best_move = -1
-		best_distance = 20
+		best_distance = 50
 		for mi, move in enumerate(moves):
 			i_moved = move.panel_perm[i_old]
 			moved_panel = panels[i_moved]
-			if moved_panel != old_panel \
-				and moved_panel.color != old_panel.color \
-				and new_panel.color in [moved_panel.color, old_panel.color] \
-				and move.affected_panels[i_old]:
-				distance = manhattan_dist(moved_panel.pos, new_panel.pos) \
-					+ 5 * int(moved_panel.color != new_panel.color)
-				if (distance < best_distance):
-					best_move = mi
-					best_distance = distance
+			i_moved_new = move.panel_perm[i_new]
+
+			distance = move_distance(old_panel, new_panel, moved_panel, i_old != i_moved, i_new != i_moved_new)
+			if (distance < best_distance):
+				best_move = mi
+				best_distance = distance
 
 		move_table[i_old][i_new] = best_move
 

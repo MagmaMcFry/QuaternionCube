@@ -8,9 +8,11 @@ let toggle_animations = function() {};
 window.addEventListener("load", function() {
 	const canvas = document.getElementById("canvas");
 	const scene = new THREE.Scene();
-	const camera = new THREE.PerspectiveCamera(40, canvas.clientWidth / canvas.clientHeight, 0.1, 10);
-	camera.position.z = 5;
+	const camera = new THREE.PerspectiveCamera(30, canvas.clientWidth / canvas.clientHeight, 0.1, 20);
+	camera.position.z = 8;
+	camera.position.x = -0.4;
 	const camera_rotation = new THREE.Object3D();
+	camera_rotation.quaternion.copy(new THREE.Quaternion(-0.14, -0.2, -0.02, 1).normalize());
 	camera_rotation.add(camera);
 	scene.add(camera_rotation);
 	const renderer = new THREE.WebGLRenderer();

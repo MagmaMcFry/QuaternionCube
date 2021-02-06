@@ -93,6 +93,7 @@ function gen_puzzle_from_data(data) {
 					uniforms: {
 						cubie_center: { value: cubie_center },
 						quaternion: {value: new THREE.Vector4(0, 1, 0, 0)},
+						highlight: { value: 0 },
 					},
 					vertexShader: VERTEX_SHADER,
 					fragmentShader: FRAGMENT_SHADER,
@@ -164,6 +165,7 @@ function gen_puzzle_from_data(data) {
 						pq.z,
 						pq.w,
 					);
+					quaternion_materials[i].uniforms.highlight.value = highlighted_panels.includes(i) ? 1 : 0;
 				} else {
 					// Regular colors
 					if (highlighted_panels.includes(i)) {
@@ -195,7 +197,7 @@ function gen_puzzle_from_data(data) {
 		},
 
 		set_show_quaternions: function(yes) {
-			show_quaternions = yes;
+			show_quaternions = !!yes;
 		},
 
 		reset: function() {
