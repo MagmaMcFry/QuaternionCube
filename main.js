@@ -4,7 +4,7 @@ window.addEventListener("load", function() {
 	const canvas = document.getElementById("canvas");
 	const scene = new THREE.Scene();
 	const camera = new THREE.PerspectiveCamera(40, canvas.clientWidth / canvas.clientHeight, 0.1, 10);
-	camera.position.z = 3;
+	camera.position.z = 5;
 	const renderer = new THREE.WebGLRenderer();
 	renderer.setSize(canvas.clientWidth, canvas.clientHeight);
 	canvas.appendChild(renderer.domElement);
@@ -14,7 +14,8 @@ window.addEventListener("load", function() {
 	// const cubemesh = new THREE.Mesh(geometry, material);
 	// scene.add(cubemesh);
 
-	var cube = rubikscube(2);
+	//var cube = rubikscube(2);
+	var cube = gen_from_data(CUBE_3_DATA);
 	var cubemodel = cube.get_root();
 	scene.add(cubemodel);
 
