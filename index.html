@@ -2,18 +2,27 @@
 <html>
 	<head>
 		<meta charset="UTF-8">
-		<title>QCube</title>
-		<style type="text/css">
-			html, body { margin: 0; }
-		</style>
+		<title>Quaternion Cube</title>
+		<link rel="stylesheet" type="text/css" href="style.css">
 	</head>
 	<body>
-		<div id="canvas" style="width: 100vw; height: 100vh;"></div>
+		<div id="canvas"></div>
 		<script src="three.js"></script>
 		<script src="shader_vertex.js"></script>
 		<script src="shader_fragment.js"></script>
 		<script src="rubiks_data.js"></script>
 		<script src="puzzle.js"></script>
 		<script src="main.js"></script>
+		<div id="title" class="infobox">
+			<p><b>Quaternion Cube</b> by MagmaMcFry</p>
+			<p>Click and drag a cube face to another to twist</p>
+			<p>Click and drag the background to rotate</p>
+		</div>
+		<div id="controls" class="infobox">
+			<p><a href="javascript:;" onclick="scramble();"><b>Scramble</b></a> (Space)</p>
+			<p><a href="javascript:;" onclick="reset();"><b>Reset</b></a> (R)</p>
+			<p><a id="toggle_quaternions" class="toggle" href="javascript:;" onclick="toggle_quaternions();"><b>Toggle quaternions</b></a> (Q)</p>
+			<p><a id="toggle_animations" class="toggle" href="javascript:;" onclick="toggle_animations();"><b>Toggle animations</b></a> (A)</p>
+		</div>
 	</body>
 </html>

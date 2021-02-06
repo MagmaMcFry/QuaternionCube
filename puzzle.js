@@ -57,7 +57,7 @@ function _create_geometry(box) {
 }
 
 function gen_puzzle_from_data(data) {
-	let black_material = new THREE.MeshBasicMaterial({color: 0x808080});
+	let black_material = new THREE.MeshBasicMaterial({color: 0x707070});
 	let color_materials = [];
 	let hilit_materials = [];
 	let quaternion_materials = [];
@@ -125,44 +125,56 @@ function gen_puzzle_from_data(data) {
 			}
 		},
 
-		update_panels: function(...highlighted_panels) {
+		update: function(move_id, amount, highlighted_panels) {
+			if (move_id < 0) {
+				move_id = 0;
+				amount = 0;
+			}
+			let move = data.moves[move_id];
+			let axis = new THREE.Vector3(move.axis[0], move.axis[1], move.axis[2]);
+			let rq = new THREE.Quaternion().setFromAxisAngle(axis, amount * Math.PI * 2 / move.fraction);
+			let irq = new THREE.Quaternion().setFromAxisAngle(axis, -amount * Math.PI * 2 / move.fraction);
+			for (let i = 0; i < data.panels.length; ++i) {
+				if (move.affected_panels[i]) {
+					panel_meshes[i].quaternion.copy(irq);
+				} else {
+					panel_meshes[i].quaternion.identity();
+				}
+			}
 			for (let i = 0; i < data.panels.length; ++i) {
 				let c = panel_colors[i];
 				if (c < 0) {
 					// Stay gray
 				} else if (show_quaternions) {
+					// Quaternion colors
 					panel_meshes[i].material = quaternion_materials[i];
 					let quaternion_id = panel_quaternions[i];
-					quaternion_materials[i].uniforms.quaternion.value = new THREE.Vector4(
+					let pq = new THREE.Quaternion(
 						data.quaternions[quaternion_id].x,
 						data.quaternions[quaternion_id].y,
 						data.quaternions[quaternion_id].z,
 						data.quaternions[quaternion_id].w,
 					);
-				} else if (highlighted_panels.includes(i)) {
-					panel_meshes[i].material = hilit_materials[c];
-				} else {
-					panel_meshes[i].material = color_materials[c];
-				}
-			}
-		},
-		set_current_rotation: function(move_id, amount) {
-			if (move_id < 0) {
-				for (let i = 0; i < data.panels.length; ++i) {
-					panel_meshes[i].quaternion.identity();
-				}
-			} else {
-				let move = data.moves[move_id];
-				let axis = new THREE.Vector3(move.axis[0], move.axis[1], move.axis[2]);
-				for (let i = 0; i < data.panels.length; ++i) {
 					if (move.affected_panels[i]) {
-						panel_meshes[i].quaternion.setFromAxisAngle(axis, -amount * Math.PI * 2 / move.fraction);
+						pq.multiply(rq);
+					}
+					quaternion_materials[i].uniforms.quaternion.value = new THREE.Vector4(
+						pq.x,
+						pq.y,
+						pq.z,
+						pq.w,
+					);
+				} else {
+					// Regular colors
+					if (highlighted_panels.includes(i)) {
+						panel_meshes[i].material = hilit_materials[c];
 					} else {
-						panel_meshes[i].quaternion.identity();
+						panel_meshes[i].material = color_materials[c];
 					}
 				}
 			}
 		},
+
 		get_panel: function(raycaster) {
 			let result_array = raycaster.intersectObject(root, true);
 			if (result_array.length == 0) {
@@ -176,9 +188,21 @@ function gen_puzzle_from_data(data) {
 			}
 			return -1;
 		},
+
 		try_rotate: function(old_panel, new_panel) {
 			if (old_panel < 0 || new_panel < 0) return -1;
 			return data.move_table[old_panel][new_panel];
+		},
+
+		set_show_quaternions: function(yes) {
+			show_quaternions = yes;
+		},
+
+		reset: function() {
+			for (let i = 0; i < data.panels.length; ++i) {
+				panel_colors[i] = data.panels[i].color;
+				panel_quaternions[i] = 0;
+			}
 		},
 	}
 };

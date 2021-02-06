@@ -1,0 +1,39 @@
+
+html, body { margin: 0; }
+
+#canvas {
+    width: 100vw;
+    height: 100vh;
+}
+
+.infobox {
+    position: absolute; color: #777;
+    font-family: Arial, Helvetica, sans-serif;
+    pointer-events: none; margin-left: 10px;
+}
+
+#title {
+    top: 0px;
+}
+
+#controls {
+    bottom: 0px;
+}
+
+a {
+    pointer-events: visible;
+    text-decoration: none;
+    color: #aaa;
+}
+
+a :hover {
+    color: #fff;
+}
+
+.toggle {
+    color: #5a5;
+}
+
+.toggle.disabled {
+    color: #a55;
+}
