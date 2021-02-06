@@ -9,13 +9,7 @@ window.addEventListener("load", function() {
 	renderer.setSize(canvas.clientWidth, canvas.clientHeight);
 	canvas.appendChild(renderer.domElement);
 
-	// const geometry = new THREE.BoxGeometry();
-	// const material = new THREE.MeshBasicMaterial({color: 0xff0000});
-	// const cubemesh = new THREE.Mesh(geometry, material);
-	// scene.add(cubemesh);
-
-	//var cube = rubikscube(2);
-	var cube = gen_from_data(CUBE_3_DATA);
+	var cube = gen_puzzle_from_data(CUBE_3_DATA);
 	var cubemodel = cube.get_root();
 	scene.add(cubemodel);
 
@@ -33,10 +27,6 @@ window.addEventListener("load", function() {
 		if (current_amount > 0) {
 			current_amount = 0;
 		}
-
-	//	if (current_amount == 0) {
-	//		apply_move(Math.floor(Math.random() * cube.get_move_count()));
-	//	}
 
 		cube.set_current_rotation(current_move, current_amount);
 	};
@@ -78,7 +68,6 @@ window.addEventListener("load", function() {
 	renderer.domElement.addEventListener("mousedown", function() {
 		mouse_down = true;
 		clicked_panel = getMousedPanel();
-		//console.log("Clicked panel", clicked_panel);
 	});
 
 	renderer.domElement.addEventListener("mouseup", function() {
@@ -99,15 +88,8 @@ window.addEventListener("load", function() {
 		}
 	});
 
-	//renderer.domElement.addEventListener("click", function() {
-	//	apply_move(Math.floor(Math.random() * cube.get_move_count()));
-	//});
-
 	function animate() {
 		requestAnimationFrame(animate);
-		//let target = new THREE.Quaternion(0.5, 0.5, 0.5, 0.5);
-		//let rotation = new THREE.Quaternion().rotateTowards(target, 0.01);
-		//cubemodel.quaternion.multiply(rotation);
 		update_cube();
 		moused_panel = getMousedPanel();
 		cube.update_panels(moused_panel, clicked_panel);

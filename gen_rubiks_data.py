@@ -22,6 +22,13 @@ class Panel:
 
 panels = []
 
+def clamp(v, lb, ub):
+	if v < lb:
+		return lb
+	if v > ub:
+		return ub
+	return v
+
 for x in range(-2, 3):
 	for y in range(-2, 3):
 		for z in range(-2, 3):
@@ -29,6 +36,7 @@ for x in range(-2, 3):
 			if stuple[1] < 2:
 				panel = Panel()
 				panel.pos = tuple([x, y, z])
+				panel.cubie_center = tuple([clamp(x, -1, 1), clamp(y, -1, 1), clamp(z, -1, 1)])
 				panel.outer = (stuple[2] == 2)
 				panels.append(panel)
 
