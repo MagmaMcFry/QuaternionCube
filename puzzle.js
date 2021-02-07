@@ -126,7 +126,7 @@ function gen_puzzle_from_data(data) {
 			}
 		},
 
-		update: function(move_id, amount, highlighted_panels) {
+		update: function(move_id, amount, highlighted_panels, camera_quaternion) {
 			if (move_id < 0) {
 				move_id = 0;
 				amount = 0;
@@ -159,6 +159,7 @@ function gen_puzzle_from_data(data) {
 					if (move.affected_panels[i]) {
 						pq.multiply(rq);
 					}
+					pq.multiplyQuaternions(camera_quaternion, pq);
 					quaternion_materials[i].uniforms.quaternion.value = new THREE.Vector4(
 						pq.x,
 						pq.y,

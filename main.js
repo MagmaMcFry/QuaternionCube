@@ -4,6 +4,7 @@ let scramble = function() {};
 let reset = function() {};
 let toggle_quaternions = function() {};
 let toggle_animations = function() {};
+let toggle_relative = function() {};
 
 window.addEventListener("load", function() {
 	const canvas = document.getElementById("canvas");
@@ -27,6 +28,7 @@ window.addEventListener("load", function() {
 	let current_move = 0;
 	let show_animations = true;
 	let show_quaternions = true;
+	let show_relative = false;
 
 	function apply_move(move) {
 		move_progress = show_animations ? -1 : 0;
@@ -45,6 +47,7 @@ window.addEventListener("load", function() {
 	reset = function() {
 		cube.reset();
 		move_progress = 0;
+		camera_rotation.quaternion.copy(new THREE.Quaternion(-0.14, -0.2, -0.02, 1).normalize());
 	};
 
 	toggle_quaternions = function() {
@@ -66,13 +69,25 @@ window.addEventListener("load", function() {
 		}
 	};
 
+	toggle_relative = function() {
+		show_relative = !show_relative;
+		if (show_relative) {
+			document.getElementById("toggle_relative").classList.remove("disabled");
+		} else {
+			document.getElementById("toggle_relative").classList.add("disabled");
+		}
+	};
+
 	function update_cube() {
 		move_progress += 0.05;
 		if (move_progress > 0) {
 			move_progress = 0;
 		}
-
-		cube.update(current_move, move_progress, [moused_panel, clicked_panel]);
+		let camera_quaternion = new THREE.Quaternion();
+		if (show_relative) {
+			camera_quaternion.multiply(camera_rotation.quaternion);
+		}
+		cube.update(current_move, move_progress, [moused_panel, clicked_panel], camera_quaternion);
 	};
 
 	let mouse_down = false;
@@ -99,7 +114,7 @@ window.addEventListener("load", function() {
 			let target = new THREE.Quaternion(100*dmouse.y, -100*dmouse.x, 0, 1).normalize();
 			let rotation = new THREE.Quaternion();
 			rotation.rotateTowards(target, 2*dmouse.length());
-			camera_rotation.quaternion.multiply(rotation);
+			camera_rotation.quaternion.multiply(rotation).normalize();
 		}
 	});
 
@@ -127,7 +142,7 @@ window.addEventListener("load", function() {
 	});
 
 	document.addEventListener("keypress", function(e) {
-		console.log("Code: " + e.code);
+		//console.log("Code: " + e.code);
 		if (e.code === "Space") {
 			scramble();
 		} else if (e.code === "KeyR") {
@@ -136,6 +151,8 @@ window.addEventListener("load", function() {
 			toggle_quaternions();
 		} else if (e.code === "KeyA") {
 			toggle_animations();
+		} else if (e.code === "KeyC") {
+			toggle_relative();
 		}
 	});
 
