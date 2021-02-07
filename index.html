@@ -10,16 +10,18 @@
 		<script src="three.js"></script>
 		<script src="shader_vertex.js"></script>
 		<script src="shader_fragment.js"></script>
-		<script src="rubiks_data.js"></script>
+		<script src="data.js"></script>
 		<script src="puzzle.js"></script>
 		<script src="main.js"></script>
 		<div id="title" class="infobox">
 			<p><a href="https://github.com/MagmaMcFry/QuaternionCube" target="_blank" rel="noopener noreferrer">Quaternion Cube</a> by MagmaMcFry</p>
 			<p>Drag a cube face to another to twist</p>
 			<p>Drag the background to rotate</p>
-			<div id="loading"><p>Loading...</p></div>
+			<div id="loading"><p>Preparing... (make sure JavaScript is enabled)</p></div>
 		</div>
 		<div id="controls" class="infobox">
+			<p><a href="javascript:;" onclick="undo();">Undo</a> (Ctrl+Z)</p>
+			<p><a href="javascript:;" onclick="redo();">Redo</a> (Ctrl+Shift+Z)</p>
 			<p><a href="javascript:;" onclick="scramble();">Scramble</a> (Space)</p>
 			<p><a href="javascript:;" onclick="reset();">Reset</a> (R)</p>
 			<p><a id="toggle_quaternions" class="toggle" href="javascript:;" onclick="toggle_quaternions();">Toggle quaternions</a> (Q)</p>

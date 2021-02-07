@@ -5,6 +5,8 @@ let reset = function() {};
 let toggle_quaternions = function() {};
 let toggle_animations = function() {};
 let toggle_relative = function() {};
+let undo = function() {};
+let redo = function() {};
 
 window.addEventListener("load", function() {
 	const canvas = document.getElementById("canvas");
@@ -20,7 +22,7 @@ window.addEventListener("load", function() {
 	renderer.setSize(canvas.clientWidth, canvas.clientHeight);
 	canvas.appendChild(renderer.domElement);
 
-	var cube = gen_puzzle_from_data(CUBE_3_DATA);
+	var cube = gen_puzzle_from_data(CUBE_DATA);
 	var cubemodel = cube.get_root();
 	scene.add(cubemodel);
 
@@ -29,6 +31,8 @@ window.addEventListener("load", function() {
 	let show_animations = true;
 	let show_quaternions = true;
 	let show_relative = false;
+	let undo_history = [];
+	let redo_history = [];
 
 	function apply_move(move) {
 		move_progress = show_animations ? -1 : 0;
@@ -36,11 +40,37 @@ window.addEventListener("load", function() {
 		cube.apply_move(current_move);
 	};
 
+	function do_move(move) {
+		undo_history.push(move);
+		redo_history = [];
+		apply_move(move);
+	};
+
+	undo = function() {
+		if (undo_history.length == 0) {
+			return;
+		}
+		let last_move = undo_history.pop();
+		redo_history.push(last_move);
+		apply_move(cube.opposite_move(last_move));
+	};
+
+	redo = function() {
+		if (redo_history.length == 0) {
+			return;
+		}
+		let next_move = redo_history.pop();
+		undo_history.push(next_move);
+		apply_move(next_move);
+	};
+
 	scramble = function() {
 		for (let i = 0; i < 100; ++i) {
 			let move_id = Math.floor(Math.random() * cube.get_move_count());
 			cube.apply_move(move_id);
 			move_progress = 0;
+			undo_history = [];
+			redo_history = [];
 		}
 	};
 
@@ -48,6 +78,8 @@ window.addEventListener("load", function() {
 		cube.reset();
 		move_progress = 0;
 		camera_rotation.quaternion.copy(new THREE.Quaternion(-0.14, -0.2, -0.02, 1).normalize());
+		undo_history = [];
+		redo_history = [];
 	};
 
 	toggle_quaternions = function() {
@@ -119,7 +151,6 @@ window.addEventListener("load", function() {
 	});
 
 	window.addEventListener("resize", function() {
-		console.log("Resized");
 		camera.aspect = canvas.clientWidth / canvas.clientHeight;
 		camera.updateProjectionMatrix();
 		renderer.setSize( canvas.clientWidth, canvas.clientHeight );
@@ -134,7 +165,7 @@ window.addEventListener("load", function() {
 		if (clicked_panel != -1 && moused_panel != -1) {
 			let move = cube.try_rotate(clicked_panel, moused_panel);
 			if (move != -1) {
-				apply_move(move);
+				do_move(move);
 			}
 		}
 		mouse_down = false;
@@ -153,6 +184,17 @@ window.addEventListener("load", function() {
 			toggle_animations();
 		} else if (e.code === "KeyC") {
 			toggle_relative();
+		}
+	});
+
+	document.addEventListener("keydown", function(e) {
+		//console.log("Key: " + e.key);
+		if (e.ctrlKey && (e.key === 'z' || e.key === 'Z')) {
+			if (e.shiftKey) {
+				redo();
+			} else {
+				undo();
+			}
 		}
 	});
 

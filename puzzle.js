@@ -113,6 +113,12 @@ function gen_puzzle_from_data(data) {
 	return {
 		get_move_count: function() { return data.moves.length; },
 		get_root: function() { return root; },
+
+		opposite_move: function(move_id) {
+			if (move_id == -1) return -1;
+			return data.move_opposites[move_id];
+		},
+
 		apply_move: function(move_id) {
 			let move = data.moves[move_id];
 			let perm = move.panel_perm;
