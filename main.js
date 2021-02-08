@@ -7,6 +7,8 @@ let toggle_animations = function() {};
 let toggle_relative = function() {};
 let undo = function() {};
 let redo = function() {};
+let save = function() {};
+let load = function() {};
 
 window.addEventListener("load", function() {
 	const canvas = document.getElementById("canvas");
@@ -33,6 +35,7 @@ window.addEventListener("load", function() {
 	let show_relative = false;
 	let undo_history = [];
 	let redo_history = [];
+	let initial_history = [];
 
 	function apply_move(move) {
 		move_progress = show_animations ? -1 : 0;
@@ -64,6 +67,36 @@ window.addEventListener("load", function() {
 		apply_move(next_move);
 	};
 
+	save = function() {
+		let history_object = {
+			initial_history: initial_history,
+			undo_history: undo_history,
+		};
+		window.location.hash = JSON.stringify(history_object);
+	};
+
+	load = function() {
+		let history_object = {};
+		let initial_history_new = [];
+		let undo_history_new = [];
+		try {
+			history_object = JSON.parse(decodeURIComponent(window.location.hash.substring(1)));
+			initial_history_new = history_object["initial_history"];
+			for (let i = 0; i < initial_history_new.length; ++i) { initial_history_new[i] = parseInt(initial_history_new[i]); }
+			undo_history_new = history_object["undo_history"];
+			for (let i = 0; i < undo_history_new.length; ++i) { undo_history_new[i] = parseInt(undo_history_new[i]); }
+		} catch (error) { console.log(error); return; }
+		reset();
+		initial_history = initial_history_new;
+		for (let i = 0; i < initial_history.length; ++i) {
+			cube.apply_move(initial_history[i]);
+			move_progress = 0;
+		}
+		for (let i = 0; i < undo_history_new.length; ++i) {
+			do_move(undo_history_new[i]);
+		}
+	}
+
 	scramble = function() {
 		for (let i = 0; i < 100; ++i) {
 			let move_id = Math.floor(Math.random() * cube.get_move_count());
@@ -71,6 +104,7 @@ window.addEventListener("load", function() {
 			move_progress = 0;
 			undo_history = [];
 			redo_history = [];
+			initial_history.push(move_id);
 		}
 	};
 
@@ -80,6 +114,7 @@ window.addEventListener("load", function() {
 		camera_rotation.quaternion.copy(new THREE.Quaternion(-0.14, -0.2, -0.02, 1).normalize());
 		undo_history = [];
 		redo_history = [];
+		initial_history = [];
 	};
 
 	toggle_quaternions = function() {
@@ -184,6 +219,10 @@ window.addEventListener("load", function() {
 			toggle_animations();
 		} else if (e.code === "KeyC") {
 			toggle_relative();
+		} else if (e.code === "KeyS") {
+			save();
+		} else if (e.code === "KeyL") {
+			load();
 		}
 	});
 
